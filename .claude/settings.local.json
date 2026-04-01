@@ -18,7 +18,29 @@
       "Write",
       "Edit",
       "Glob",
-      "Grep"
+      "Grep",
+      "Bash(pip show:*)",
+      "Bash(python -c \"from agent.brain import generar_respuesta; from agent.memory import inicializar_db; from agent.providers import obtener_proveedor; print\\(''Imports OK''\\)\")",
+      "Bash(python -c \":*)",
+      "Bash(python -m app.seed)",
+      "Bash(curl -s -X POST http://localhost:8001/webhook -H \"Content-Type: application/json\" -d '{\"\"messages\"\":[{\"\"id\"\":\"\"msg_test1\"\",\"\"chat_id\"\":\"\"+5491155001234\"\",\"\"from_me\"\":false,\"\"text\"\":{\"\"body\"\":\"\"Hola, necesito agendar un turno de electricidad\"\"}}]}')",
+      "Bash(curl -s http://localhost:8001/)",
+      "Bash(pkill -f \"uvicorn app.main:app --port 8001\")",
+      "Bash(python -m app.update_prompt)",
+      "Bash(npm install:*)",
+      "Bash(python -c \"import secrets; print\\(''JWT_SECRET='' + secrets.token_hex\\(32\\)\\)\")",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(''''Next.js:'''', d[''''version'''']\\)\")",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(''''Tailwind:'''', d[''''version'''']\\)\")",
+      "Bash(curl -s http://localhost:3000/login)",
+      "Bash(npm run:*)",
+      "Bash(echo \"Frontend PID: $!\")",
+      "Bash(netstat -ano)",
+      "Bash(tasklist)",
+      "Bash(powershell.exe -Command \"Get-Process -Id 46664 | Select-Object Name,Id\")",
+      "Bash(python:*)"
     ]
+  },
+  "enabledPlugins": {
+    "ui-ux-pro-max@ui-ux-pro-max-skill": true
   }
 }

@@ -1,7 +1,8 @@
-# Secretos — NUNCA subir a GitHub
+# Secrets — NEVER commit
 .env
+*.env.local
 
-# Base de datos local
+# Databases
 *.db
 *.sqlite
 *.sqlite3
@@ -9,7 +10,6 @@
 # Python
 __pycache__/
 *.py[cod]
-*.pyo
 .venv/
 venv/
 env/
@@ -17,20 +17,13 @@ env/
 dist/
 build/
 
-# Knowledge (archivos privados del negocio)
+# Knowledge (private business files)
 knowledge/*
 !knowledge/.gitkeep
 
-# Archivos generados por Claude Code durante onboarding
-agent/
-config/
-tests/
-requirements.txt
-Dockerfile
-docker-compose.yml
-
-# Session state
-config/session.yaml
+# Node
+node_modules/
+.next/
 
 # OS
 .DS_Store
@@ -40,11 +33,6 @@ Thumbs.db
 .vscode/
 .idea/
 *.swp
-*.swo
-*~
 
 # Docker
 .dockerignore
-
-# Node (si se usa para Claude Code)
-node_modules/
