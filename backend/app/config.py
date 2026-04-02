@@ -10,7 +10,7 @@ class Settings(BaseSettings):
     port: int = 8000
     environment: str = "development"
     frontend_url: str = "http://localhost:3000"
-    debounce_seconds: int = 6
+    debounce_seconds: int = 40
     jwt_secret: str = "change-me-in-production"
     dashboard_user: str = "admin"
     dashboard_password_hash: str = ""

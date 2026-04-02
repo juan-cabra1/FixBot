@@ -1,3 +1,4 @@
+screenshots/
 # Secrets — NEVER commit
 .env
 *.env.local

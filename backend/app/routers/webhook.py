@@ -8,6 +8,7 @@ from sqlalchemy.exc import IntegrityError
 
 from app.config import settings
 from app.database import async_session
+from app.models.business import BusinessConfig
 from app.models.client import Client
 from app.models.conversation import Conversation
 from app.models.message import Message
@@ -93,7 +94,8 @@ async def process_message(phone: str, text: str) -> None:
                 .limit(1)
             )
             conversation = result.scalar_one_or_none()
-            if conversation is None:
+            is_new_conversation = conversation is None
+            if is_new_conversation:
                 conversation = Conversation(client_id=client.id, status="active")
                 db.add(conversation)
                 await db.flush()
@@ -111,8 +113,16 @@ async def process_message(phone: str, text: str) -> None:
                 for msg in reversed(raw_history)
             ]
 
-            # Generate response with Gemini
-            response_text = await brain.generate_response(text, history, db, client_id=client.id)
+            # For new conversations, use the configured welcome message directly
+            if is_new_conversation:
+                biz_result = await db.execute(select(BusinessConfig).limit(1))
+                biz = biz_result.scalar_one_or_none()
+                if biz and biz.welcome_message:
+                    response_text = biz.welcome_message
+                else:
+                    response_text = await brain.generate_response(text, history, db, client_id=client.id)
+            else:
+                response_text = await brain.generate_response(text, history, db, client_id=client.id)
 
             # Save user message
             user_message = Message(
