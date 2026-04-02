@@ -7,6 +7,9 @@ import type {
   AvailabilityBlock,
   BusinessConfig,
   LoginRequest,
+  Service,
+  ServiceCreate,
+  ServiceUpdate,
   SettingsUpdate,
   TokenResponse,
 } from "@/types";
@@ -69,6 +72,22 @@ export const api = {
       }),
     delete: (id: number) =>
       fetchAPI<void>(`/api/v1/appointments/${id}`, { method: "DELETE" }),
+  },
+
+  services: {
+    list: () => fetchAPI<Service[]>("/api/v1/services"),
+    create: (data: ServiceCreate) =>
+      fetchAPI<Service>("/api/v1/services", {
+        method: "POST",
+        body: JSON.stringify(data),
+      }),
+    update: (id: number, data: ServiceUpdate) =>
+      fetchAPI<Service>(`/api/v1/services/${id}`, {
+        method: "PATCH",
+        body: JSON.stringify(data),
+      }),
+    delete: (id: number) =>
+      fetchAPI<void>(`/api/v1/services/${id}`, { method: "DELETE" }),
   },
 
   settings: {

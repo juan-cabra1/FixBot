@@ -93,6 +93,42 @@ export interface AvailabilityBlock {
   is_active: boolean;
 }
 
+export interface Service {
+  id: number;
+  name: string;
+  description: string | null;
+  price: string | null; // Decimal serialized as string
+  currency: string;
+  duration_minutes: number | null;
+  is_active: boolean;
+  created_at: string;
+}
+
+export interface ServiceCreate {
+  name: string;
+  description?: string | null;
+  price?: number | null;
+  currency?: string;
+  duration_minutes?: number | null;
+}
+
+export interface ServiceUpdate {
+  name?: string;
+  description?: string | null;
+  price?: number | null;
+  currency?: string;
+  duration_minutes?: number | null;
+  is_active?: boolean;
+}
+
+export interface BusinessRules {
+  coverage_zone: string;
+  materials_policy: "included" | "client_provides" | "to_agree";
+  handles_emergencies: boolean;
+  emergency_details: string;
+  custom_rules: string[];
+}
+
 export interface LoginRequest {
   username: string;
   password: string;

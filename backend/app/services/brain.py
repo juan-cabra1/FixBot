@@ -1,4 +1,5 @@
 # app/services/brain.py — Gemini AI: dynamic prompt builder + tool-call loop
+import json
 import logging
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -30,6 +31,54 @@ _TONE_INSTRUCTIONS: dict[str, str] = {
     ),
     "neutro": "Tu tono es neutro y directo. Sin formalismos exagerados ni lenguaje muy informal.",
 }
+
+
+_MATERIALS_LABELS: dict[str, str] = {
+    "included": "Los materiales están incluidos en el presupuesto",
+    "client_provides": "Los materiales los provee el cliente",
+    "to_agree": "A convenir con el cliente",
+}
+
+
+def _format_custom_instructions(raw: str) -> str:
+    """Format system_prompt content, supporting JSON structured format and legacy plain text."""
+    if not raw or not raw.strip():
+        return ""
+
+    try:
+        data = json.loads(raw)
+        if not isinstance(data, dict):
+            raise ValueError("not a dict")
+    except (json.JSONDecodeError, ValueError):
+        return f"## Instrucciones personalizadas del dueño\n{raw.strip()}"
+
+    lines: list[str] = []
+
+    if data.get("coverage_zone"):
+        lines.append(f"- Zona de cobertura: {data['coverage_zone']}")
+
+    if data.get("materials_policy"):
+        label = _MATERIALS_LABELS.get(data["materials_policy"], data["materials_policy"])
+        lines.append(f"- Política de materiales: {label}")
+
+    if data.get("handles_emergencies"):
+        detail = data.get("emergency_details", "")
+        lines.append(
+            f"- Urgencias: Sí — {detail}" if detail else "- Urgencias: Sí, se atienden"
+        )
+    else:
+        lines.append("- Urgencias: No se atienden urgencias fuera de horario")
+
+    custom_rules: list[str] = data.get("custom_rules", [])
+    if custom_rules:
+        lines.append("- Reglas adicionales:")
+        for rule in custom_rules:
+            lines.append(f"  • {rule}")
+
+    if not lines:
+        return ""
+
+    return "## Instrucciones personalizadas del dueño\n" + "\n".join(lines)
 
 
 async def _load_config(db: AsyncSession) -> BusinessConfig | None:
@@ -93,12 +142,8 @@ async def build_system_prompt(db: AsyncSession) -> str:
     else:
         availability_section = "## Horarios disponibles para visitas a domicilio\n  (Sin horarios configurados)"
 
-    # Custom instructions from DB
-    custom_instructions = (
-        f"## Instrucciones personalizadas del dueño\n{config.system_prompt.strip()}"
-        if config.system_prompt and config.system_prompt.strip()
-        else ""
-    )
+    # Custom instructions from DB (supports JSON structured format or legacy plain text)
+    custom_instructions = _format_custom_instructions(config.system_prompt)
 
     prompt = f"""Sos {config.agent_name}, el asistente virtual de {config.name}.
 {f"{config.description}" if config.description else ""}

@@ -8,7 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
 from app.database import engine
 from app.models import Base
-from app.routers import appointments, auth, webhook
+from app.routers import appointments, auth, services, webhook
 from app.routers import settings as settings_router
 
 log_level = logging.DEBUG if settings.environment == "development" else logging.INFO
@@ -53,6 +53,7 @@ app.add_middleware(
 app.include_router(webhook.router)
 app.include_router(auth.router)
 app.include_router(appointments.router)
+app.include_router(services.router)
 app.include_router(settings_router.router)
 
 
