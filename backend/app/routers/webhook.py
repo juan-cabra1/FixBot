@@ -2,7 +2,7 @@
 import logging
 from datetime import datetime, timezone
 
-from fastapi import APIRouter, Request, Response
+from fastapi import APIRouter, Request
 from sqlalchemy import select, update
 from sqlalchemy.exc import IntegrityError
 
@@ -29,21 +29,12 @@ async def webhook_health() -> dict:
 
 
 @router.post("/webhook")
-async def webhook_handler(request: Request, response: Response) -> dict:
+async def webhook_handler(request: Request) -> dict:
     """
     Receive messages from Whapi.cloud, enqueue them in the debouncer, and
     return 200 immediately. Processing happens in the background after the
     debounce window.
     """
-    # Validate webhook token — Whapi signs requests with the same API token
-    incoming_token = request.headers.get("Authorization", "")
-    # Accept both raw token and "Bearer <token>" format
-    incoming_token = incoming_token.removeprefix("Bearer ").strip()
-    if incoming_token != settings.whapi_token:
-        logger.warning(f"Rejected webhook: invalid token from {request.client.host}")
-        response.status_code = 403
-        return {"detail": "Forbidden"}
-
     try:
         payload = await request.json()
         messages = whatsapp.parse_webhook(payload)
