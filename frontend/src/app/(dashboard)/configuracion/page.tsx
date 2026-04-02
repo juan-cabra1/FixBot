@@ -16,7 +16,12 @@ import type {
 function parseRules(raw: string): BusinessRules {
   try {
     const parsed = JSON.parse(raw);
-    if (parsed && typeof parsed === "object" && !Array.isArray(parsed)) {
+    if (
+      parsed &&
+      typeof parsed === "object" &&
+      !Array.isArray(parsed) &&
+      ("coverage_zone" in parsed || "custom_rules" in parsed || "handles_emergencies" in parsed)
+    ) {
       return {
         coverage_zone: parsed.coverage_zone ?? "",
         materials_policy: parsed.materials_policy ?? "to_agree",
@@ -26,14 +31,8 @@ function parseRules(raw: string): BusinessRules {
       };
     }
   } catch {}
-  // Legacy plain text: migrate into a single custom rule
-  return {
-    coverage_zone: "",
-    materials_policy: "to_agree",
-    handles_emergencies: false,
-    emergency_details: "",
-    custom_rules: raw.trim() ? [raw.trim()] : [],
-  };
+  // Legacy or developer-written prompt: discard and start fresh
+  return DEFAULT_RULES;
 }
 
 function formatPrice(price: string | null): string {
